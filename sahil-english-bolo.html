@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Sahil's English Bolo</title>
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="English Bolo" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="application-name" content="English Bolo" />
+<meta name="theme-color" content="#1D4ED8" />
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231D4ED8'/%3E%3Ctext x='50' y='66' font-size='48' text-anchor='middle'%3E%F0%9F%92%AC%3C/text%3E%3C/svg%3E" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231D4ED8'/%3E%3Ctext x='50' y='66' font-size='48' text-anchor='middle'%3E%F0%9F%92%AC%3C/text%3E%3C/svg%3E" />
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #F4F6FB; }
+  body { font-family: 'Inter', 'Noto Sans Devanagari', sans-serif; }
+  #root { min-height: 100vh; }
+  @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .flip-card { perspective: 1000px; }
+  .flip-inner {
+    position: relative; width: 100%; min-height: 118px; transition: transform 0.5s;
+    transform-style: preserve-3d;
+  }
+  .flip-inner.flipped { transform: rotateY(180deg); }
+  .flip-face {
+    position: absolute; inset: 0; backface-visibility: hidden;
+    border-radius: 16px; padding: 16px 18px; display: flex; flex-direction: column; justify-content: center;
+  }
+  .flip-back { transform: rotateY(180deg); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState } = React;
+
+const APP_NAME = "Sahil's English Bolo";
+
+const CATEGORIES = [
+  { id: "office", title: "Office", subtitle: "काम की बातचीत", icon: "💼", color: "#2563EB", soft: "#EAF0FE" },
+  { id: "market", title: "Market", subtitle: "खरीदारी की बातचीत", icon: "🛒", color: "#F59E0B", soft: "#FFF6E5" },
+  { id: "phone", title: "Phone Call", subtitle: "फ़ोन पर बात करना", icon: "📞", color: "#DB2777", soft: "#FDEBF3" },
+];
+
+const PHRASES = {
+  office: [
+    { en: "Could you please send me the report?", hi: "क्या आप मुझे रिपोर्ट भेज सकते हैं?", pr: "कुड यू प्लीज़ सेंड मी द रिपोर्ट?" },
+    { en: "I will get back to you by tomorrow.", hi: "मैं कल तक आपको जवाब दूंगा/दूंगी।", pr: "आई विल गेट बैक टू यू बाय टुमॉरो।" },
+    { en: "Let's schedule a meeting for Monday.", hi: "चलिए सोमवार के लिए मीटिंग तय करते हैं।", pr: "लेट्स स्केजूल अ मीटिंग फॉर मंडे।" },
+    { en: "I'm running a bit late today.", hi: "मुझे आज थोड़ी देर हो रही है।", pr: "आइम रनिंग अ बिट लेट टुडे।" },
+    { en: "Can we discuss this over a call?", hi: "क्या हम इसे कॉल पर बात कर सकते हैं?", pr: "कैन वी डिस्कस दिस ओवर अ कॉल?" },
+    { en: "I have completed the assigned task.", hi: "मैंने दिया गया काम पूरा कर लिया है।", pr: "आई हैव कम्प्लीटेड द असाइंड टास्क।" },
+    { en: "Please review this document and share feedback.", hi: "कृपया यह दस्तावेज़ देखें और feedback दें।", pr: "प्लीज़ रिव्यू दिस डॉक्यूमेंट एंड शेयर फीडबैक।" },
+    { en: "I need to take a day off tomorrow.", hi: "मुझे कल छुट्टी चाहिए।", pr: "आई नीड टू टेक अ डे ऑफ टुमॉरो।" },
+  ],
+  market: [
+    { en: "How much does this cost?", hi: "इसकी कीमत कितनी है?", pr: "हाउ मच डज़ दिस कॉस्ट?" },
+    { en: "Do you have this in a different size?", hi: "क्या यह किसी और साइज़ में है?", pr: "डू यू हैव दिस इन अ डिफरेंट साइज़?" },
+    { en: "Can you give me a discount?", hi: "क्या आप कुछ छूट दे सकते हैं?", pr: "कैन यू गिव मी अ डिस्काउंट?" },
+    { en: "I am just looking, thank you.", hi: "मैं बस देख रहा/रही हूं, धन्यवाद।", pr: "आई एम जस्ट लुकिंग, थैंक यू।" },
+    { en: "Do you accept card payment?", hi: "क्या आप कार्ड से payment लेते हैं?", pr: "डू यू एक्सेप्ट कार्ड पेमेंट?" },
+    { en: "Please pack this for me.", hi: "कृपया इसे पैक कर दीजिए।", pr: "प्लीज़ पैक दिस फॉर मी।" },
+    { en: "Where is the billing counter?", hi: "बिलिंग काउंटर कहाँ है?", pr: "वेयर इज़ द बिलिंग काउंटर?" },
+    { en: "This is too expensive for me.", hi: "यह मेरे लिए बहुत महंगा है।", pr: "दिस इज़ टू एक्सपेंसिव फॉर मी।" },
+  ],
+  phone: [
+    { en: "Hello, may I speak to Mr. Sharma?", hi: "हैलो, क्या मैं श्री शर्मा से बात कर सकता/सकती हूं?", pr: "हैलो, मे आई स्पीक टू मिस्टर शर्मा?" },
+    { en: "Sorry, the line is not clear.", hi: "माफ़ कीजिए, लाइन साफ़ नहीं है।", pr: "सॉरी, द लाइन इज़ नॉट क्लियर।" },
+    { en: "Can you please call me back later?", hi: "क्या आप मुझे बाद में कॉल back कर सकते हैं?", pr: "कैन यू प्लीज़ कॉल मी बैक लेटर?" },
+    { en: "I will send you a message with the details.", hi: "मैं आपको details के साथ मैसेज भेजूंगा/भेजूंगी।", pr: "आई विल सेंड यू अ मैसेज विद द डिटेल्स।" },
+    { en: "Sorry, I missed your call.", hi: "माफ़ कीजिए, मुझसे आपका कॉल miss हो गया।", pr: "सॉरी, आई मिस्ड योर कॉल।" },
+    { en: "Please hold for a moment.", hi: "कृपया थोड़ी देर होल्ड कीजिए।", pr: "प्लीज़ होल्ड फॉर अ मोमेंट।" },
+    { en: "I will call you back in five minutes.", hi: "मैं आपको पाँच मिनट में वापस कॉल करूंगा/करूंगी।", pr: "आई विल कॉल यू बैक इन फाइव मिनट्स।" },
+    { en: "Thank you for calling, have a good day.", hi: "कॉल करने के लिए धन्यवाद, आपका दिन शुभ हो।", pr: "थैंक यू फॉर कॉलिंग, हैव अ गुड डे।" },
+  ],
+};
+
+const QUIZ = {
+  office: [
+    { hi: "क्या आप मुझे रिपोर्ट भेज सकते हैं?", opts: ["Could you please send me the report?", "I will get back to you by tomorrow.", "Let's schedule a meeting for Monday.", "I'm running a bit late today."], a: "Could you please send me the report?" },
+    { hi: "चलिए सोमवार के लिए मीटिंग तय करते हैं।", opts: ["Let's schedule a meeting for Monday.", "I need to take a day off tomorrow.", "Can we discuss this over a call?", "Please review this document and share feedback."], a: "Let's schedule a meeting for Monday." },
+    { hi: "मुझे आज थोड़ी देर हो रही है।", opts: ["I'm running a bit late today.", "I have completed the assigned task.", "I will get back to you by tomorrow.", "I need to take a day off tomorrow."], a: "I'm running a bit late today." },
+    { hi: "क्या हम इसे कॉल पर बात कर सकते हैं?", opts: ["Can we discuss this over a call?", "Could you please send me the report?", "Please review this document and share feedback.", "Let's schedule a meeting for Monday."], a: "Can we discuss this over a call?" },
+    { hi: "मैंने दिया गया काम पूरा कर लिया है।", opts: ["I have completed the assigned task.", "I'm running a bit late today.", "I need to take a day off tomorrow.", "I will get back to you by tomorrow."], a: "I have completed the assigned task." },
+    { hi: "कृपया यह दस्तावेज़ देखें और feedback दें।", opts: ["Please review this document and share feedback.", "Can we discuss this over a call?", "Let's schedule a meeting for Monday.", "Could you please send me the report?"], a: "Please review this document and share feedback." },
+    { hi: "मुझे कल छुट्टी चाहिए।", opts: ["I need to take a day off tomorrow.", "I have completed the assigned task.", "I'm running a bit late today.", "I will get back to you by tomorrow."], a: "I need to take a day off tomorrow." },
+    { hi: "मैं कल तक आपको जवाब दूंगा।", opts: ["I will get back to you by tomorrow.", "Could you please send me the report?", "Please review this document and share feedback.", "Can we discuss this over a call?"], a: "I will get back to you by tomorrow." },
+  ],
+  market: [
+    { hi: "इसकी कीमत कितनी है?", opts: ["How much does this cost?", "Do you have this in a different size?", "Can you give me a discount?", "Please pack this for me."], a: "How much does this cost?" },
+    { hi: "क्या यह किसी और साइज़ में है?", opts: ["Do you have this in a different size?", "Where is the billing counter?", "I am just looking, thank you.", "This is too expensive for me."], a: "Do you have this in a different size?" },
+    { hi: "क्या आप कुछ छूट दे सकते हैं?", opts: ["Can you give me a discount?", "Do you accept card payment?", "How much does this cost?", "Please pack this for me."], a: "Can you give me a discount?" },
+    { hi: "मैं बस देख रहा हूं, धन्यवाद।", opts: ["I am just looking, thank you.", "This is too expensive for me.", "Where is the billing counter?", "Do you have this in a different size?"], a: "I am just looking, thank you." },
+    { hi: "क्या आप कार्ड से payment लेते हैं?", opts: ["Do you accept card payment?", "Can you give me a discount?", "Please pack this for me.", "How much does this cost?"], a: "Do you accept card payment?" },
+    { hi: "कृपया इसे पैक कर दीजिए।", opts: ["Please pack this for me.", "Where is the billing counter?", "I am just looking, thank you.", "Do you accept card payment?"], a: "Please pack this for me." },
+    { hi: "बिलिंग काउंटर कहाँ है?", opts: ["Where is the billing counter?", "This is too expensive for me.", "Can you give me a discount?", "I am just looking, thank you."], a: "Where is the billing counter?" },
+    { hi: "यह मेरे लिए बहुत महंगा है।", opts: ["This is too expensive for me.", "How much does this cost?", "Do you have this in a different size?", "Please pack this for me."], a: "This is too expensive for me." },
+  ],
+  phone: [
+    { hi: "हैलो, क्या मैं श्री शर्मा से बात कर सकता हूं?", opts: ["Hello, may I speak to Mr. Sharma?", "Sorry, the line is not clear.", "Please hold for a moment.", "Thank you for calling, have a good day."], a: "Hello, may I speak to Mr. Sharma?" },
+    { hi: "माफ़ कीजिए, लाइन साफ़ नहीं है।", opts: ["Sorry, the line is not clear.", "Sorry, I missed your call.", "Can you please call me back later?", "I will call you back in five minutes."], a: "Sorry, the line is not clear." },
+    { hi: "क्या आप मुझे बाद में कॉल back कर सकते हैं?", opts: ["Can you please call me back later?", "Please hold for a moment.", "I will send you a message with the details.", "Hello, may I speak to Mr. Sharma?"], a: "Can you please call me back later?" },
+    { hi: "मैं आपको details के साथ मैसेज भेजूंगा।", opts: ["I will send you a message with the details.", "Sorry, I missed your call.", "Thank you for calling, have a good day.", "Sorry, the line is not clear."], a: "I will send you a message with the details." },
+    { hi: "माफ़ कीजिए, मुझसे आपका कॉल miss हो गया।", opts: ["Sorry, I missed your call.", "Can you please call me back later?", "Please hold for a moment.", "I will call you back in five minutes."], a: "Sorry, I missed your call." },
+    { hi: "कृपया थोड़ी देर होल्ड कीजिए।", opts: ["Please hold for a moment.", "I will send you a message with the details.", "Hello, may I speak to Mr. Sharma?", "Thank you for calling, have a good day."], a: "Please hold for a moment." },
+    { hi: "मैं आपको पाँच मिनट में वापस कॉल करूंगा।", opts: ["I will call you back in five minutes.", "Sorry, the line is not clear.", "Sorry, I missed your call.", "Can you please call me back later?"], a: "I will call you back in five minutes." },
+    { hi: "कॉल करने के लिए धन्यवाद, आपका दिन शुभ हो।", opts: ["Thank you for calling, have a good day.", "Please hold for a moment.", "I will send you a message with the details.", "Hello, may I speak to Mr. Sharma?"], a: "Thank you for calling, have a good day." },
+  ],
+};
+
+const GOOD = ["सही जवाब! Well done.", "बढ़िया! एकदम सही।", "Perfect! शाबाश।"];
+const TRY = ["गलत जवाब \u2014 सही sentence दोबारा पढ़ें।", "कोई बात नहीं, अगली बार सही करेंगे।"];
+
+function ProgressBar({ total, current, color }) {
+  return (
+    <div style={{ width: "100%", height: "8px", background: "#E5E7EB", borderRadius: "999px", overflow: "hidden" }}>
+      <div style={{ width: `${((current + 1) / total) * 100}%`, height: "100%", background: color, borderRadius: "999px", transition: "width 0.3s ease" }} />
+    </div>
+  );
+}
+
+function HomeScreen({ onPick }) {
+  return (
+    <div style={{ minHeight: "100%", display: "flex", flexDirection: "column", alignItems: "center", padding: "40px 20px 40px" }}>
+      <div style={{ textAlign: "center", marginBottom: "34px" }}>
+        <div style={{
+          width: "72px", height: "72px", borderRadius: "20px", margin: "0 auto 16px",
+          background: "linear-gradient(135deg, #2563EB, #DB2777)", display: "flex", alignItems: "center",
+          justifyContent: "center", fontSize: "32px", boxShadow: "0 8px 20px rgba(37,99,235,0.25)",
+        }}>💬</div>
+        <h1 style={{ fontFamily: "'Poppins', sans-serif", color: "#111827", fontWeight: 800, fontSize: "28px", margin: 0 }}>
+          {APP_NAME}
+        </h1>
+        <p style={{ fontFamily: "'Inter', sans-serif", color: "#6B7280", fontSize: "15px", marginTop: "6px" }}>
+          रोज़मर्रा की English बातचीत, Hindi में समझें
+        </p>
+      </div>
+
+      <div style={{ width: "100%", maxWidth: "420px", display: "flex", flexDirection: "column", gap: "16px" }}>
+        {CATEGORIES.map((c) => (
+          <button key={c.id} onClick={() => onPick(c.id)} style={{
+            width: "100%", textAlign: "left", borderRadius: "18px", padding: "20px",
+            display: "flex", alignItems: "center", gap: "16px",
+            boxShadow: "0 2px 8px rgba(17,24,39,0.06)", background: "#fff", border: "1px solid #EEF0F4",
+            borderLeft: `5px solid ${c.color}`, cursor: "pointer",
+          }}>
+            <div style={{
+              width: "52px", height: "52px", borderRadius: "14px", display: "flex", alignItems: "center",
+              justifyContent: "center", fontSize: "24px", flexShrink: 0, background: c.soft,
+            }}>{c.icon}</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontFamily: "'Poppins', sans-serif", color: "#111827", fontWeight: 700, fontSize: "18px" }}>{c.title}</div>
+              <div style={{ fontFamily: "'Inter', 'Noto Sans Devanagari', sans-serif", color: "#6B7280", fontSize: "13px" }}>{c.subtitle}</div>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      <p style={{ marginTop: "44px", fontSize: "12px", textAlign: "center", maxWidth: "300px", fontFamily: "'Inter', sans-serif", color: "#9CA3AF" }}>
+        हर sentence पर टैप करके Hindi meaning और उच्चारण देखें
+      </p>
+    </div>
+  );
+}
+
+function FlashCard({ phrase, color, soft }) {
+  const [flipped, setFlipped] = useState(false);
+  return (
+    <div className="flip-card" onClick={() => setFlipped((f) => !f)} style={{ cursor: "pointer" }}>
+      <div className={`flip-inner ${flipped ? "flipped" : ""}`}>
+        <div className="flip-face" style={{ background: "#fff", border: `1.5px solid ${soft}`, boxShadow: "0 2px 6px rgba(17,24,39,0.05)" }}>
+          <div style={{ fontSize: "11px", fontWeight: 700, color: color, marginBottom: "6px", fontFamily: "'Inter', sans-serif" }}>ENGLISH · टैप करें</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: "16px", color: "#111827", lineHeight: 1.4 }}>{phrase.en}</div>
+        </div>
+        <div className="flip-face flip-back" style={{ background: soft }}>
+          <div style={{ fontSize: "11px", fontWeight: 700, color: color, marginBottom: "6px", fontFamily: "'Inter', sans-serif" }}>हिंदी अर्थ</div>
+          <div style={{ fontFamily: "'Noto Sans Devanagari', sans-serif", fontWeight: 700, fontSize: "16px", color: "#111827", marginBottom: "8px" }}>{phrase.hi}</div>
+          <div style={{ fontSize: "12px", color: "#6B7280", fontFamily: "'Noto Sans Devanagari', sans-serif" }}>उच्चारण: {phrase.pr}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LearnScreen({ category }) {
+  const phrases = PHRASES[category.id];
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "14px", paddingTop: "18px" }}>
+      {phrases.map((p, i) => (
+        <FlashCard key={i} phrase={p} color={category.color} soft={category.soft} />
+      ))}
+    </div>
+  );
+}
+
+function QuizScreen({ category, onFinish }) {
+  const questions = QUIZ[category.id];
+  const [idx, setIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [feedback, setFeedback] = useState("");
+  const [isCorrect, setIsCorrect] = useState(null);
+  const [done, setDone] = useState(false);
+
+  const q = questions[idx];
+
+  function handleAnswer(opt) {
+    if (selected) return;
+    setSelected(opt);
+    const correct = opt === q.a;
+    setIsCorrect(correct);
+    if (correct) { setScore((s) => s + 1); setFeedback(GOOD[Math.floor(Math.random() * GOOD.length)]); }
+    else { setFeedback(TRY[Math.floor(Math.random() * TRY.length)]); }
+    setTimeout(() => {
+      if (idx + 1 < questions.length) { setIdx((i) => i + 1); setSelected(null); setFeedback(""); setIsCorrect(null); }
+      else { setDone(true); }
+    }, 1300);
+  }
+
+  if (done) {
+    const pct = Math.round((score / questions.length) * 100);
+    let msg = "और अभ्यास करें, अच्छा होगा।";
+    if (pct >= 80) msg = "बहुत बढ़िया! आप तैयार हैं।";
+    else if (pct >= 50) msg = "अच्छी कोशिश, थोड़ा और practice करें।";
+    return (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "60px 10px", textAlign: "center" }}>
+        <div style={{
+          width: "84px", height: "84px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+          background: category.soft, fontSize: "28px", marginBottom: "18px", color: category.color, fontFamily: "'Poppins', sans-serif", fontWeight: 700,
+        }}>{pct}%</div>
+        <h2 style={{ fontFamily: "'Noto Sans Devanagari', sans-serif", color: "#111827", fontWeight: 700, fontSize: "20px", margin: "0 0 8px" }}>{msg}</h2>
+        <p style={{ fontFamily: "'Inter', sans-serif", color: "#6B7280", fontSize: "15px", marginBottom: "24px" }}>Score: {score} / {questions.length}</p>
+        <button onClick={() => { setIdx(0); setSelected(null); setScore(0); setDone(false); setFeedback(""); setIsCorrect(null); }}
+          style={{ borderRadius: "12px", padding: "12px 22px", fontWeight: 600, background: category.color, color: "#fff", border: "none", fontFamily: "'Inter', sans-serif", cursor: "pointer" }}>
+          फिर से Practice करें
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ paddingTop: "16px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
+        <span style={{ fontSize: "13px", fontWeight: 600, color: "#6B7280", fontFamily: "'Inter', sans-serif" }}>{idx + 1} / {questions.length}</span>
+        <span style={{ fontSize: "13px", fontWeight: 700, color: category.color, fontFamily: "'Inter', sans-serif" }}>{score} pts</span>
+      </div>
+      <ProgressBar total={questions.length} current={idx} color={category.color} />
+
+      <div style={{
+        marginTop: "22px", background: "#fff", borderRadius: "20px", padding: "24px 20px",
+        boxShadow: "0 4px 16px rgba(17,24,39,0.06)", animation: "popIn 0.25s ease",
+      }}>
+        <div style={{
+          display: "inline-block", fontSize: "12px", fontWeight: 700, color: category.color, background: category.soft,
+          padding: "4px 12px", borderRadius: "999px", marginBottom: "14px", fontFamily: "'Inter', sans-serif",
+        }}>सही English sentence चुनें</div>
+        <h2 style={{ fontFamily: "'Noto Sans Devanagari', sans-serif", color: "#111827", fontWeight: 700, fontSize: "18px", margin: "0 0 20px", lineHeight: 1.5 }}>{q.hi}</h2>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          {q.opts.map((opt) => {
+            const isSelected = selected === opt;
+            const optCorrect = opt === q.a;
+            let bg = "#F9FAFB", border = "#E5E7EB", textColor = "#111827";
+            if (selected) {
+              if (optCorrect) { bg = "#ECFDF5"; border = "#10B981"; textColor = "#047857"; }
+              else if (isSelected) { bg = "#FEF2F2"; border = "#F87171"; textColor = "#B91C1C"; }
+            }
+            return (
+              <button key={opt} disabled={!!selected} onClick={() => handleAnswer(opt)} style={{
+                textAlign: "left", borderRadius: "12px", padding: "13px 16px", fontSize: "14.5px", fontWeight: 500,
+                background: bg, border: `1.5px solid ${border}`, color: textColor,
+                fontFamily: "'Inter', sans-serif", cursor: selected ? "default" : "pointer",
+              }}>{opt}</button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div style={{ height: "30px", marginTop: "14px", textAlign: "center" }}>
+        {feedback && (
+          <p style={{ fontFamily: "'Noto Sans Devanagari', sans-serif", fontWeight: 600, fontSize: "15px", margin: 0, color: isCorrect ? "#047857" : "#B91C1C" }}>
+            {isCorrect ? "✓ " : "✕ "}{feedback}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CategoryScreen({ categoryId, onExit }) {
+  const category = CATEGORIES.find((c) => c.id === categoryId);
+  const [tab, setTab] = useState("learn");
+
+  return (
+    <div style={{ padding: "24px 20px 40px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "18px" }}>
+        <button onClick={onExit} style={{ padding: "8px 10px", borderRadius: "10px", background: category.soft, border: "none", cursor: "pointer", fontSize: "14px", color: category.color, fontWeight: 600, fontFamily: "'Inter', sans-serif" }}>
+          ← वापस
+        </button>
+        <div style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "17px", color: "#111827" }}>
+          {category.icon} {category.title}
+        </div>
+        <div style={{ width: "56px" }} />
+      </div>
+
+      <div style={{ display: "flex", gap: "8px", background: "#EEF0F4", borderRadius: "12px", padding: "4px", marginBottom: "6px" }}>
+        <button onClick={() => setTab("learn")} style={{
+          flex: 1, padding: "10px", borderRadius: "9px", border: "none", fontWeight: 700, fontSize: "14px",
+          background: tab === "learn" ? "#fff" : "transparent", color: tab === "learn" ? category.color : "#6B7280",
+          boxShadow: tab === "learn" ? "0 1px 4px rgba(0,0,0,0.08)" : "none", cursor: "pointer", fontFamily: "'Inter', sans-serif",
+        }}>सीखो</button>
+        <button onClick={() => setTab("quiz")} style={{
+          flex: 1, padding: "10px", borderRadius: "9px", border: "none", fontWeight: 700, fontSize: "14px",
+          background: tab === "quiz" ? "#fff" : "transparent", color: tab === "quiz" ? category.color : "#6B7280",
+          boxShadow: tab === "quiz" ? "0 1px 4px rgba(0,0,0,0.08)" : "none", cursor: "pointer", fontFamily: "'Inter', sans-serif",
+        }}>Practice करो</button>
+      </div>
+
+      {tab === "learn" ? <LearnScreen category={category} /> : <QuizScreen category={category} onFinish={() => {}} />}
+    </div>
+  );
+}
+
+function App() {
+  const [screen, setScreen] = useState("home");
+  const [categoryId, setCategoryId] = useState(null);
+
+  return (
+    <div style={{ width: "100%", minHeight: "100vh", background: "linear-gradient(180deg, #F4F6FB 0%, #ECEFF8 100%)" }}>
+      <div style={{ maxWidth: "480px", margin: "0 auto", minHeight: "100vh", background: "#F8F9FC" }}>
+        {screen === "home" && <HomeScreen onPick={(id) => { setCategoryId(id); setScreen("category"); }} />}
+        {screen === "category" && <CategoryScreen categoryId={categoryId} onExit={() => setScreen("home")} />}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
